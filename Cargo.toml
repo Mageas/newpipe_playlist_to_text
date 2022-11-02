@@ -1,0 +1,15 @@
+[package]
+name = "newpipe_playlist_to_text"
+version = "0.1.0"
+edition = "2021"
+authors = ["Mageas <dev@mageas.net>"]
+description = "Export NewPipe playlists to text files"
+keywords = ["newpipe", "piped"]
+license = "GPL-3.0"
+repository = "https://gitea.heartnerds.org/Mageas/newpipe_playlist_to_text"
+
+[dependencies]
+thiserror = "1.0.37"
+anyhow = "1.0.66"
+rusqlite = "0.28.0"
+clap = { version = "4.0.18", features = ["derive"] }
