@@ -1,6 +1,6 @@
 use rusqlite::{Connection, OpenFlags};
 
-use crate::{NewpipedError, NewpipedResult};
+use crate::{NewpipePlaylistError, NewpipePlaylistResult};
 
 /// Database representation
 #[derive(Debug)]
@@ -11,7 +11,7 @@ pub struct Database<'a> {
 
 impl<'a> Database<'a> {
     /// Connect to the database
-    pub fn new(path: &'a str) -> NewpipedResult<Self> {
+    pub fn new(path: &'a str) -> NewpipePlaylistResult<Self> {
         Ok(Self {
             connection: Connection::open_with_flags(
                 path,
@@ -19,13 +19,13 @@ impl<'a> Database<'a> {
                     | OpenFlags::SQLITE_OPEN_URI
                     | OpenFlags::SQLITE_OPEN_NO_MUTEX,
             )
-            .map_err(|e| NewpipedError::DatabaseConnection(e, path.to_owned()))?,
+            .map_err(|e| NewpipePlaylistError::DatabaseConnection(e, path.to_owned()))?,
             path,
         })
     }
 
     /// Query the database
-    pub fn query(&self) -> NewpipedResult<Vec<Playlist>> {
+    pub fn query(&self) -> NewpipePlaylistResult<Vec<Playlist>> {
         let mut stmt = self
             .connection
             .prepare(
@@ -38,7 +38,7 @@ impl<'a> Database<'a> {
     ORDER BY p.name, psj.join_index
     "#,
             )
-            .map_err(|e| NewpipedError::DatabasePrepareStatement(e, self.path.to_owned()))?;
+            .map_err(|e| NewpipePlaylistError::DatabasePrepareStatement(e, self.path.to_owned()))?;
 
         let rows = stmt
             .query_map([], |row| {
@@ -47,7 +47,7 @@ impl<'a> Database<'a> {
                     url: row.get(1)?,
                 })
             })
-            .map_err(|e| NewpipedError::DatabaseQuery(e, self.path.to_owned()))?
+            .map_err(|e| NewpipePlaylistError::DatabaseQuery(e, self.path.to_owned()))?
             .into_iter()
             .map(|row| row.unwrap())
             .collect::<Vec<Row>>();
@@ -69,6 +69,7 @@ impl<'a> Database<'a> {
             }
             actual_playlist.push(row.url);
         }
+        playlists.push(actual_playlist);
         playlists.remove(0);
         playlists
     }

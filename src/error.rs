@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum NewpipedError {
+pub enum NewpipePlaylistError {
     #[error("Unable to connect to '{1}' : {0}")]
     DatabaseConnection(#[source] rusqlite::Error, String),
 
@@ -12,4 +12,4 @@ pub enum NewpipedError {
     DatabaseQuery(#[source] rusqlite::Error, String),
 }
 
-pub type NewpipedResult<T = ()> = Result<T, NewpipedError>;
+pub type NewpipePlaylistResult<T = ()> = Result<T, NewpipePlaylistError>;
